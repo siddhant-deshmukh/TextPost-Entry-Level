@@ -16,15 +16,19 @@ export async function registerUser(req: Request, res: Response) {
 
     const encryptedPassword = await bcrypt.hash(password, 15)
 
-    const newUser: IUser = await User.create({
+    const newUser = await User.create({
       email,
       name,
       password: encryptedPassword,
     })
+    const user = newUser.toObject()
 
     const token = jwt.sign({ _id: newUser._id.toString(), email }, process.env.TOKEN_KEY || 'zhingalala', { expiresIn: '2h' })
     res.cookie("GoogleFormClone_acesstoken", token)
-    return res.status(201).json({ token })
+    return res.status(201).json({ token, user: {
+      ...user,
+      password: ""
+    } })
   } catch (err) {
     return res.status(500).json({ msg: 'Some internal error occured', err })
   }
@@ -33,7 +37,7 @@ export async function registerUser(req: Request, res: Response) {
 export async function loginUser(req: Request, res: Response) {
   try {
     const { email, password }: { email: string, password: string } = req.body;
-    const checkUser = await User.findOne({ email });
+    const checkUser = await User.findOne({ email }).select({ password: false });
 
     if (!checkUser) return res.status(404).json({ msg: 'User doesn`t exists!' });
     if (!checkUser.password) return res.status(405).json({ msg: 'Try another method' });
@@ -41,7 +45,7 @@ export async function loginUser(req: Request, res: Response) {
 
     const token = jwt.sign({ _id: checkUser._id.toString(), email }, process.env.TOKEN_KEY || 'zhingalala', { expiresIn: '2h' })
     res.cookie("GoogleFormClone_acesstoken", token)
-    return res.status(202).json({ token })
+    return res.status(202).json({ token, user: checkUser })
   } catch (err) {
     return res.status(500).json({ msg: 'Some internal error occured', err })
   }

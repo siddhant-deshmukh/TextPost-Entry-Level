@@ -1,34 +1,49 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect } from "react"
+import { SideNavBar } from "./components/NavBar"
+import { useDispatch, useSelector } from "react-redux"
+import { loadUserFailed, loadUserSuccess, startingToLoadUser } from "./features/userSlice"
+import axios from "axios"
+import { RootState } from "./app/store"
+import Loader from "./components/Loader"
+import Auth from "./pages/Auth"
 
 function App() {
-  const [count, setCount] = useState(0)
 
+  const { loading: userLoading, errMsg, msg, user } = useSelector((state: RootState) => state.user)
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(startingToLoadUser())
+    axios.get(`${import.meta.env.VITE_API_URL}/`, { withCredentials: true })
+      .then(({ status, data }) => {
+        if (status === 200 && data.user) {
+          dispatch(loadUserSuccess({ user: data.user as IUser, msg: null }))
+        } else {
+          console.log("Special", status, data)
+          dispatch(loadUserFailed({ errorMsg: "please login or register" }))
+        }
+      }).catch((err) => {
+        dispatch(loadUserFailed({ errorMsg: "please login or register" }))
+        console.error("While fetching user data", err)
+      })
+  }, [])
+
+  if(userLoading){
+    return (
+      <div className="w-full mt-[30vh] flex items-center justify-center">
+        <Loader size={60}/>
+      </div>
+    )
+  } else if(!user) {
+    return (
+      <Auth />
+    )
+  }
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <SideNavBar />
+    </div>
   )
 }
 
