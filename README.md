@@ -1,3 +1,5 @@
+![search](imgs/search-feature.gif)
+
 ## Frontend images:
 
 * ![auth-form.png](imgs/auth-form.png)
