@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from 'express';
 
 const verifyToken = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const token = req.cookies.text-post-access-token;
+    const token = req.cookies['text-post-access-token'];
 
     // console.log("req.cookies.access_token",req.cookies.text-post-access-token,process.env.TOKEN_KEY || 'zhingalala');
     // console.log("Coming")
