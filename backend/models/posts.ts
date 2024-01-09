@@ -16,10 +16,10 @@ export interface IPostResponse extends IPost {
 }
 
 const postSchema = new mongoose.Schema<IPost>({
-  author_id: { type: mongoose.Schema.ObjectId, required: true, ref: "User", index: true },
-  title: { type: String, required: true, maxLength: 30, minlength: 1 },
+  title: { type: String, required: true, maxLength: 30, minlength: 1, index: "text" },
   description: { type: String, required: true, maxLength: 300, minlength: 1 },
-  tags: [{ type: String, maxLength: 10, minlength: 1 }],
+  author_id: { type: mongoose.Schema.ObjectId, required: true, ref: "User", index: true },
+  tags: [{ type: String, maxLength: 10, minlength: 1, index: "text" }],
   time: { type: Number, default: Date.now(), index: "descending" },
   num_comments: { type: Number, default: 0 }
 })

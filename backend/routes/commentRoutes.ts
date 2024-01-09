@@ -92,6 +92,40 @@ router.post('/:post_id',
     }
   });
 
+router.get('/s',
+  auth,
+  query('search').exists().isString(),
+  validate,
+  async function (req: Request, res: Response) {
+    try {
+      let { search }: { search?: string } = req.query
+
+      if (!search || search !== "") {
+        return res.status(400).json({ msg: "no search parameter" })
+      }
+      const comments = await Comment.find({ $text: { $search: search } }).limit(10)
+
+      const getCommentsWithAuthorInfoPromise = comments.map(async (comment): Promise<ICommentResponse | undefined> => {
+        const authorInfo = await User.findById(comment.author_id).select({ name: 1 })
+        if (!authorInfo) {
+          return undefined
+        }
+        return {
+          ...comment.toObject(),
+          author_name: authorInfo.name
+        }
+      })
+
+      const CommentsWithAuthorsInfo = await Promise.all(getCommentsWithAuthorInfoPromise)
+
+      return res.status(200).json({ comments: CommentsWithAuthorsInfo });
+      
+    } catch (err) {
+      return res.status(500).json({ msg: 'Some internal error occured', err })
+    }
+  }
+)
+
 async function CheckIfPostIdExist(post_id: string | null) {
   if (post_id) {
     const post = await Post.findById(post_id)

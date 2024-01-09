@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const { default: Post } = require('./dist/models/posts')
 const { faker } = require('@faker-js/faker')
 
-const data_length = 20
+const data_length = 10
 const max_lengths = {
   title: 30,
   description: 200,

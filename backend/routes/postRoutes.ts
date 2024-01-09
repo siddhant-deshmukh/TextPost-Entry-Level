@@ -66,4 +66,36 @@ router.post('/',
     }
   });
 
+router.get('/s',
+  auth,
+  query('search').exists().isString(),
+  validate,
+  async function (req: Request, res: Response) {
+    try {
+      let { search }: { search?: string } = req.query
+
+      if (!search || search === "") {
+        return res.status(400).json({ msg: "no search parameter" })
+      }
+      const posts = await Post.find({ $text: { $search: search, $diacriticSensitive: true } }).limit(10)
+
+      const getPostWithAuthorInfoPromise = posts.map(async (post): Promise<IPostResponse | undefined> => {
+        const authorInfo = await User.findById(post.author_id).select({ name: 1 })
+        if (!authorInfo) {
+          return undefined
+        }
+        return {
+          ...post.toObject(),
+          author_name: authorInfo.name
+        }
+      })
+
+      const PostWithAuthorsInfo = await Promise.all(getPostWithAuthorInfoPromise)
+
+      return res.status(200).json({ posts: PostWithAuthorsInfo });
+    } catch (err) {
+      return res.status(500).json({ msg: 'Some internal error occured', err })
+    }
+  }
+)
 export default router

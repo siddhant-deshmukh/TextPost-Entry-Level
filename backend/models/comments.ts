@@ -7,6 +7,7 @@ export interface ICommentCreate {
   text: string,
   time: number,
 }
+
 export interface IComment extends ICommentCreate {
   _id: mongoose.Types.ObjectId,
 }
@@ -19,7 +20,7 @@ const CommentSchema = new mongoose.Schema<IComment>({
   post_id: { type: mongoose.Schema.ObjectId, required: true, ref: "Post", index: true },
   comment_id: { type: mongoose.Schema.ObjectId, ref: "Comment", sparse: true },
 
-  text: { type: String, required: true, maxLength: 300, minlength: 1 },
+  text: { type: String, required: true, maxLength: 300, minlength: 1, index: "text" },
   time: { type: Number, default: Date.now() },
 })
 

@@ -13,6 +13,8 @@ export default function Home() {
 
   const [newPostModal, setNewPostModal] = useState<boolean>(false)
   const { feed, postChoosenId } = useSelector((state: RootState) => state.postFeed)
+  const [searchField, setSearchField] = useState<string>("")
+  const [searchFeedToggle, setSearchFeedToggle] = useState<boolean>(false)
 
   const choosenPost = useMemo(() => {
     if (postChoosenId === null) {
@@ -38,8 +40,27 @@ export default function Home() {
         <NewPostFormModal setNewPostModal={setNewPostModal} />
       }
       <div className="flex flex-col border-x px-10">
+
+        {/* Not in The post page with comments this means we are in home page */}
         {
           postChoosenId === null &&
+          <>
+            <SearchInPostTitleInput
+              setSearchField={setSearchField}
+              setSearchFeedToggle={setSearchFeedToggle}
+            />
+          </>
+        }
+
+        {/* Showing searched posts */}
+        {
+          postChoosenId === null && searchFeedToggle &&
+          <SearchPostFeed search_string={searchField} setSearchFeedToggle={setSearchFeedToggle} />
+        }
+
+        {/* Not in post comment page and not showing earch feed */}
+        {
+          postChoosenId === null && !searchFeedToggle &&
           <PostFeed feed={feed} />
         }
         {
@@ -51,10 +72,39 @@ export default function Home() {
   )
 }
 
+function SearchInPostTitleInput({ setSearchField, setSearchFeedToggle }: {
+  setSearchField: React.Dispatch<React.SetStateAction<string>>
+  setSearchFeedToggle: React.Dispatch<React.SetStateAction<boolean>>
+}) {
+  const [inputStr, setInputStr] = useState<string>("")
+
+  return (
+    <div className="my-2 ">
+      <div className="flex w-full border-2 border-gray-400">
+        <input
+          onChange={(event) => {
+            setInputStr(event.target.value)
+          }}
+          className="px-2 py-3 w-full outline-none" placeholder="Enter text to search among titles (only)" />
+        <button
+          onClick={() => {
+            if (inputStr) {
+              setSearchField(inputStr)
+              setSearchFeedToggle(true)
+            }
+          }}
+          className="text-center px-3 bg-gray-800 text-white">
+          Search
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function PostWithComments({ post }: { post: IPost | null }) {
   const dispatch = useDispatch()
 
-  const [comments, setComments] = useState<IComment[]>([]) 
+  const [comments, setComments] = useState<IComment[]>([])
   if (!post) {
     return <div></div>
   }
@@ -72,7 +122,7 @@ function PostWithComments({ post }: { post: IPost | null }) {
         <span className="text-xl font-semibold">Home</span>
       </div>
       <Post post={post} />
-      <Comments post_id={post._id}/>
+      <Comments post_id={post._id} />
     </>
   )
 }
@@ -145,6 +195,7 @@ function PostFeed({ feed }: {
 
   return (
     <>
+      <span className="text-xs font-bold">Showing all posts. {feed.length} Found</span>
       <div>
         {
           feed.map((post, index) => {
@@ -159,6 +210,56 @@ function PostFeed({ feed }: {
         }
         <div></div>
       </div>
+    </>
+  )
+}
+
+function SearchPostFeed({ search_string, setSearchFeedToggle }: {
+  search_string: string
+  setSearchFeedToggle: React.Dispatch<React.SetStateAction<boolean>>
+}) {
+  const [loading, setLoding] = useState<boolean>(false)
+  const [postList, setPostList] = useState<IPost[]>([])
+
+  useMemo(() => {
+    if (search_string !== "") {
+      setLoding(true)
+      axios.get(`${import.meta.env.VITE_API_URL}/p/s?search=${search_string}`, { withCredentials: true })
+        .then(({ data }) => {
+          if (data.posts) {
+            setPostList(data.posts)
+          } else {
+            console.error("While getting posts for searched query")
+          }
+        }).catch((err) => {
+          console.error("While getting posts for searched query", err)
+        }).finally(() => {
+          setLoding(false)
+        })
+    }
+  }, [setLoding, search_string, setPostList])
+
+  return (
+    <>
+      <button
+        className="text-right my-2 hover:underline text-sm font-bold"
+        onClick={() => {
+          setSearchFeedToggle(false)
+        }}>
+        Show all posts
+      </button>
+      <span className="text-xs font-bold">Showing posts containing string {search_string} in their title. {postList.length} found</span>
+      <div>
+        {
+          postList.map((post, index) => {
+            return <Post key={post._id + index.toString()} post={post} />
+          })
+        }
+      </div>
+      {
+        loading &&
+        <Loader size={50} />
+      }
     </>
   )
 }
