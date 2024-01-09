@@ -14,10 +14,10 @@ const tag_options = [
   "react", "mongodb", "luffy", "ace", "zoro", "monkey", "express", "mern", "mera mera", "borther", "cook", "hook", "node.js"
 ]
 const author_id_list = [
-  "659bbfdaf66df6c02e4de70d",
-  "659c349c84c52727bbe266ba",
-  "659c374ae260b13b03bd1d52",
-  "659cf0df86e05c09de8c0807",
+  "659dad936f3d374d5f581941",
+  "659dad326f3d374d5f58193b",
+  "659dacd96f3d374d5f581935",
+  "659da4ef29f5d4b279befaf8",
 ]
 
 dotenv.config();

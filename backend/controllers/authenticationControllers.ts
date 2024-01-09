@@ -66,7 +66,12 @@ export async function loginUser(req: Request, res: Response) {
 
 export async function logoutUser(req: Request, res: Response) {
   try {
-    res.cookie("text-post-access-token", null)
+    res.cookie("text-post-access-token", null, {
+      secure: true,
+      httpOnly: true,
+      sameSite: 'none',
+      domain: process.env.CLIENT_URL
+    })
     return res.status(200).json({ msg: 'Sucessfull!' })
   } catch (err) {
     return res.status(500).json({ msg: 'Some internal error occured', err })
