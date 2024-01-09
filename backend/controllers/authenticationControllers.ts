@@ -26,7 +26,8 @@ export async function registerUser(req: Request, res: Response) {
     const token = jwt.sign({ _id: newUser._id.toString(), email }, process.env.TOKEN_KEY || 'zhingalala', { expiresIn: '2h' })
     res.cookie("text-post-access-token", token, {
       secure: true,
-      httpOnly: true
+      httpOnly: true,
+      sameSite: 'none'
     })
     return res.status(201).json({
       token, user: {
@@ -52,7 +53,8 @@ export async function loginUser(req: Request, res: Response) {
     const token = jwt.sign({ _id: checkUser._id.toString(), email }, process.env.TOKEN_KEY || 'zhingalala', { expiresIn: '2h' })
     res.cookie("text-post-access-token", token, {
       secure: true,
-      httpOnly: true
+      httpOnly: true,
+      sameSite: 'none'
     })
     return res.status(202).json({ token, user: { ...checkUser.toObject(), password: "" } })
   } catch (err) {
