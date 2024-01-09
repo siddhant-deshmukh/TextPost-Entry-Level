@@ -27,7 +27,8 @@ export async function registerUser(req: Request, res: Response) {
     res.cookie("text-post-access-token", token, {
       secure: true,
       httpOnly: true,
-      sameSite: 'none'
+      sameSite: 'none',
+      domain: process.env.CLIENT_URL
     })
     return res.status(201).json({
       token, user: {
@@ -54,7 +55,8 @@ export async function loginUser(req: Request, res: Response) {
     res.cookie("text-post-access-token", token, {
       secure: true,
       httpOnly: true,
-      sameSite: 'none'
+      sameSite: 'none',
+      domain: process.env.CLIENT_URL
     })
     return res.status(202).json({ token, user: { ...checkUser.toObject(), password: "" } })
   } catch (err) {
