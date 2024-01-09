@@ -24,7 +24,10 @@ export async function registerUser(req: Request, res: Response) {
     const user = newUser.toObject()
 
     const token = jwt.sign({ _id: newUser._id.toString(), email }, process.env.TOKEN_KEY || 'zhingalala', { expiresIn: '2h' })
-    res.cookie("GoogleFormClone_acesstoken", token)
+    res.cookie("text-post-access-token", token, {
+      secure: true,
+      httpOnly: true
+    })
     return res.status(201).json({
       token, user: {
         ...user,
@@ -47,7 +50,10 @@ export async function loginUser(req: Request, res: Response) {
     if (!(await bcrypt.compare(password, checkUser.password))) return res.status(406).json({ msg: 'Wrong password!' });
 
     const token = jwt.sign({ _id: checkUser._id.toString(), email }, process.env.TOKEN_KEY || 'zhingalala', { expiresIn: '2h' })
-    res.cookie("GoogleFormClone_acesstoken", token)
+    res.cookie("text-post-access-token", token, {
+      secure: true,
+      httpOnly: true
+    })
     return res.status(202).json({ token, user: { ...checkUser.toObject(), password: "" } })
   } catch (err) {
     return res.status(500).json({ msg: 'Some internal error occured', err })
@@ -56,7 +62,7 @@ export async function loginUser(req: Request, res: Response) {
 
 export async function logoutUser(req: Request, res: Response) {
   try {
-    res.cookie("GoogleFormClone_acesstoken", null)
+    res.cookie("text-post-access-token", null)
     return res.status(200).json({ msg: 'Sucessfull!' })
   } catch (err) {
     return res.status(500).json({ msg: 'Some internal error occured', err })
