@@ -18,7 +18,7 @@ export default function Auth() {
     if (emailInputRef.current && passwordInputRef.current) {
       dispatch(startingToLoadUser())
       axios.post(
-        `${import.meta.env.VITE_API_URL}/${authType==="register"?'register':'login-password'}`,
+        `${import.meta.env.VITE_API_URL}/${authType==="register"?'register':'login'}`,
         {
           email: emailInputRef.current.value,
           name: nameInputRef.current?.value,

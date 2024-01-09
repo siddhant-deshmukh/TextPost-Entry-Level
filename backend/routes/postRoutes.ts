@@ -22,15 +22,15 @@ router.get('/',
       if (!skip) skip = 0
       const posts = await Post.find().sort({ time: "descending" }).limit(limit).skip(skip)
 
-      const getPostWithAuthorInfoPromise = posts.map(async (post) : Promise<IPostResponse | undefined> =>{
+      const getPostWithAuthorInfoPromise = posts.map(async (post): Promise<IPostResponse | undefined> => {
         const authorInfo = await User.findById(post.author_id).select({ name: 1 })
-        if(!authorInfo){
+        if (!authorInfo) {
           return undefined
         }
         return {
           ...post.toObject(),
           author_name: authorInfo.name
-        } 
+        }
       })
 
       const PostWithAuthorsInfo = await Promise.all(getPostWithAuthorInfoPromise)
@@ -57,10 +57,10 @@ router.post('/',
         tags,
         title,
         description,
-        time: Date.now(), 
+        time: Date.now(),
       })
 
-      res.status(201).json({ post })
+      res.status(201).json({ post: { ...post.toObject(), author_name: res.user?.name } })
     } catch (err) {
       return res.status(500).json({ msg: 'Some internal error occured', err })
     }

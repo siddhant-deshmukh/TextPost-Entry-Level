@@ -6,6 +6,7 @@ import axios from "axios"
 import { RootState } from "./app/store"
 import Loader from "./components/Loader"
 import Auth from "./pages/Auth"
+import Home from "./pages/Home"
 
 function App() {
 
@@ -41,9 +42,7 @@ function App() {
     )
   }
   return (
-    <div>
-      <SideNavBar />
-    </div>
+    <Home />
   )
 }
 

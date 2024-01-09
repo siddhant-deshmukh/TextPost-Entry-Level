@@ -24,7 +24,7 @@ router.post('/register',
   registerUser
 );
 
-router.post('/login-password',
+router.post('/login',
   body('email').exists().isEmail().isLength({ max: 50, min: 3 }),
   body('password').exists().isString().isLength({ max: 30, min: 5 }),
   validate,
