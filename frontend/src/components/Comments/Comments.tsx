@@ -1,5 +1,5 @@
 import axios from "axios"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { Loader } from "../Loader"
 
 export default function Comments({ post_id }: {
@@ -12,7 +12,7 @@ export default function Comments({ post_id }: {
   useMemo(() => {
     setLoding(true)
     axios.get(`${import.meta.env.VITE_API_URL}/c/${post_id}`, { withCredentials: true })
-      .then(({ status, data }) => {
+      .then(({ data }) => {
         if (data.comments) {
           setComments(data.comments)
         }

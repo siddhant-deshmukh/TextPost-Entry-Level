@@ -1,5 +1,4 @@
 import { useEffect } from "react"
-import { SideNavBar } from "./components/NavBar"
 import { useDispatch, useSelector } from "react-redux"
 import { loadUserFailed, loadUserSuccess, startingToLoadUser } from "./features/userSlice"
 import axios from "axios"
@@ -10,7 +9,7 @@ import Home from "./pages/Home"
 
 function App() {
 
-  const { loading: userLoading, errMsg, msg, user } = useSelector((state: RootState) => state.user)
+  const { loading: userLoading, user } = useSelector((state: RootState) => state.user)
 
   const dispatch = useDispatch()
 

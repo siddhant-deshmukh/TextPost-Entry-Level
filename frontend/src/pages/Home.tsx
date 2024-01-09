@@ -104,7 +104,6 @@ function SearchInPostTitleInput({ setSearchField, setSearchFeedToggle }: {
 function PostWithComments({ post }: { post: IPost | null }) {
   const dispatch = useDispatch()
 
-  const [comments, setComments] = useState<IComment[]>([])
   if (!post) {
     return <div></div>
   }
@@ -139,21 +138,21 @@ function PostFeed({ feed }: {
 
   useEffect(() => {
     // loadNewPosts({ skip: 0, limit: 10 })
-    let options = {
-      threshold: 1.0,
-    };
+    // let options = {
+    //   threshold: 1.0,
+    // };
 
     // console.log(feedLength)
-    let observer = new IntersectionObserver((entries) => {
-      console.log("Feed length", feedLength, feed.length)
-      if (entries[0].isIntersecting) {
-        // console.log("HERE!")
-        loadNewPosts({
-          skip: feedLength,
-          limit: 10
-        })
-      }
-    }, options);
+    // let observer = new IntersectionObserver((entries) => {
+    //   console.log("Feed length", feedLength, feed.length)
+    //   if (entries[0].isIntersecting) {
+    //     // console.log("HERE!")
+    //     loadNewPosts({
+    //       skip: feedLength,
+    //       limit: 10
+    //     })
+    //   }
+    // }, options);
     loadNewPosts({
       skip: feedLength,
       limit: 10
